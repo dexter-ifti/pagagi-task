@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { DropDown } from '../components';
 import { getSuppertedVoices, getSupportedLangs, createCampaign } from '../services/api';
 
 function Dashborad() {
 
   const [languages, setLanguages] = useState([])
   const [voices, setVoices] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0] || 'english-in');
-  const [selectedVoice, setSelectedVoice] = useState(voices[0] || 'echo');
+  const [language, setLanguage] = useState(languages[0] || 'english-in');
+  const [voice, setVoice] = useState(voices[0] || 'echo');
   const [title, setName] = useState('');
   const [knowledgeBase, setKnowledgeBase] = useState('');
   const [script, setScript] = useState('');
@@ -15,11 +14,12 @@ function Dashborad() {
   const [error, setError] = useState(null);
 
   const handleChange = (event) => {
-    setSelectedLanguage(event.target.value);
+    setLanguage(event.target.value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation()
     setError(null);
     setCampaignId(null);
 
@@ -31,15 +31,15 @@ function Dashborad() {
     try {
       const response = await createCampaign({
         title,
-        language: selectedLanguage,
-        voice: selectedVoice,
+        language,
+        voice,
         knowledgeBase,
         script
       });
 
-      if (response.data && response.data.id) {
-        setCampaignId(response.data.id);
-        alert(`Campaign created successfully! Campaign ID: ${response.data.id}`);
+      if (response.status && response.result.campaignId) {
+        setCampaignId(response.result.campaignId);
+        alert(`Campaign created successfully! Campaign ID: ${response.result.campaignId}`);
       } else {
         setError('Campaign created, but no ID was returned. Please check your dashboard.');
       }
@@ -59,7 +59,6 @@ function Dashborad() {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        {/* <DropDown></DropDown> */}
         <input
           type="text"
           className="border border-gray-300 rounded px-3 py-2 w-full"
@@ -67,7 +66,7 @@ function Dashborad() {
           value={title}
           onChange={(e) => setName(e.target.value)}
         />
-        <select value={selectedLanguage} onChange={handleChange}>
+        <select value={language} onChange={handleChange}>
           <option value="">Select a language</option>
           {languages.map((language, index) => (
             <option key={index} value={language}>
@@ -76,7 +75,7 @@ function Dashborad() {
           ))}
         </select>
 
-        <select value={selectedVoice} onChange={(e) => setSelectedVoice(e.target.value)}>
+        <select value={voice} onChange={(e) => setVoice(e.target.value)}>
           <option value="">Select a voice</option>
           {voices.map((voice, index) => (
             <option key={index} value={voice.name}>
@@ -84,7 +83,7 @@ function Dashborad() {
             </option>
           ))}
         </select>
-
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Script</label>
         <input
           type="text"
           className="border border-gray-300 rounded px-3 py-2 w-full"
@@ -92,6 +91,7 @@ function Dashborad() {
           value={script}
           onChange={(e) => setScript(e.target.value)}
         />
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Knowledge Base URL :</label>
         <input
           type="text"
           className="border border-gray-300 rounded px-3 py-2 w-full"
@@ -99,7 +99,7 @@ function Dashborad() {
           value={knowledgeBase}
           onChange={(e) => setKnowledgeBase(e.target.value)}
         />
-        <button type="button" className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Create Campaign</button>
+        <button type="submit" className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Create Campaign</button>
       </form>
     </div>
   )

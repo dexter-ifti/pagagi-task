@@ -37,12 +37,11 @@ export const getSuppertedVoices = () => api.get('/get_supported_voices')
         console.log(error);
     });
 
-export const createCampaign = ({ title, selectedVoice, selectedLanguage, script, knowledgeBase }) => {
-    return axios.post('/create_campaign/', {
 
+    const payload = {
         title,
-        voice: selectedVoice,
-        language: selectedLanguage,
+        voice,
+        language,
         script,
         purpose: '',
         knowledgeBase,
@@ -51,9 +50,15 @@ export const createCampaign = ({ title, selectedVoice, selectedLanguage, script,
         tone: '',
         postCallAnalysis: false,
         postCallAnalysisSchema: {}
-    }, {
-        'accept': 'application/json',
-        'Authorization': 'Bearer tg_0f6e9565-e753-4f7b-876c-252248d17e88-lEiR95Ym1byOVfcIz5-u2Q',
-        'Content-Type': 'application/json'
+    }
+
+export const createCampaign = ({ title, voice, language, script, knowledgeBase }) => {
+    console.log(title, voice, language, script, knowledgeBase);
+    return  axios.post(`${API_BASE_URL}/create_campaign/`, JSON.stringify(payload), {
+        headers: {
+            'accept': 'application/json',
+            'Authorization': 'Bearer tg_0f6e9565-e753-4f7b-876c-252248d17e88-lEiR95Ym1byOVfcIz5-u2Q',
+            'Content-Type': 'application/json'
+        }
     });
 };
